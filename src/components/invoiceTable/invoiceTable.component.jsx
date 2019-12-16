@@ -15,14 +15,16 @@ import { saveAs } from 'file-saver';
 const InvoiceTable = (props) => {
 
     const config = {
-        sheetName: 'Invoice Data Data',
+        sheetName: 'Invoice Data',
         hostClass: ' spreadsheet',
         autoGenerateColumns: true,
         width: 200,
         visible: true,
         resizable: true,
         priceFormatter: '$ #.00',
-        chartKey: 1
+        chartKey: 1,
+        rowCount: 100,
+        colCount: 26
     }
 
     const [_spread, setSpread] = useState({});
@@ -56,15 +58,14 @@ const InvoiceTable = (props) => {
         });     
     }
 
+    console.log(config.rowCount);
+    
+
     return(
         <TablePanel tableKey={config.chartKey} tableTitle='Invoice Data'>
             <SpreadSheets hostClass={config.hostClass} workbookInitialized={workbookInit} valueChanged={handleValueChanged}>
-                <Worksheet name={config.sheetName} dataSource={props.tableData} autoGenerateColumns={config.autoGenerateColumns} >
-                    <Column width={50} dataField='no' headerText="No"></Column>
-                    <Column width={200} dataField='tanggal' headerText="Tanggal"></Column>
-                    <Column width={320} dataField='keterangan' headerText="Keterangan"></Column>
-                    <Column width={200} dataField='no_giro' headerText="No Giro" ></Column>
-                    <Column width={200} dataField='jumlah' headerText="Jumlah" formatter={config.priceFormatter} resizable="resizable"></Column>
+                <Worksheet name={config.sheetName} autoGenerateColumns={config.autoGenerateColumns} rowCount={config.rowCount} colCount={config.colCount}>
+                
                 </Worksheet>
             </SpreadSheets>
             <div className='dashboardRow'>
@@ -82,3 +83,6 @@ const InvoiceTable = (props) => {
 }
 
 export default InvoiceTable;
+
+
+
