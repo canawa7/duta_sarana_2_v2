@@ -7,6 +7,11 @@ import "@grapecity/spread-sheets/styles/gc.spread.sheets.excel2016colorful.css";
 import TablePanel from '../tablePanel/tablePanel.component';
 import { SpreadSheets, Worksheet, Column } from '@grapecity/spread-sheets-react';
 
+import Excel from "@grapecity/spread-excelio";
+import { extractSheetData } from "../../util/util";
+
+import { saveAs } from 'file-saver';
+
 const InvoiceTable = (props) => {
 
     const config = {
@@ -21,6 +26,8 @@ const InvoiceTable = (props) => {
     }
 
     const [_spread, setSpread] = useState({});
+    console.log(_spread);
+    
 
     const workbookInit = (spread) => {
         setSpread(spread)
@@ -29,22 +36,39 @@ const InvoiceTable = (props) => {
     function handleValueChanged(e, obj) {
         props.valueChangedCallback(obj.sheet.getDataSource());
     }
-
     handleValueChanged.bind(this);
+
+    function exportSheet() {
+        const spread = _spread;
+        const fileName = "Invoice Data.xlsx";
+
+        const sheet = spread.getSheet(0);
+        const excelIO = new Excel.IO();
+        const json = JSON.stringify(spread.toJSON({ 
+            includeBindingSource: true,
+            columnHeadersAsFrozenRows: true,
+        }))
+
+        excelIO.save(json, (blob) => {
+            saveAs(blob, fileName);
+        }, function (e) {  
+            alert(e);  
+        });     
+    }
 
     return(
         <TablePanel tableKey={config.chartKey} tableTitle='Invoice Data'>
             <SpreadSheets hostClass={config.hostClass} workbookInitialized={workbookInit} valueChanged={handleValueChanged}>
-                <Worksheet name={config.sheetName} dataSource={props.tableData} autoGenerateColumns={config.autoGenerateColumns}>
+                <Worksheet name={config.sheetName} dataSource={props.tableData} autoGenerateColumns={config.autoGenerateColumns} >
                     <Column width={50} dataField='no' headerText="No"></Column>
                     <Column width={200} dataField='tanggal' headerText="Tanggal"></Column>
                     <Column width={320} dataField='keterangan' headerText="Keterangan"></Column>
-                    <Column width={100} dataField='no_giro' headerText="No Giro" ></Column>
-                    <Column width={100} dataField='total' headerText="Total" formatter={config.priceFormatter} resizable="resizable"></Column>
+                    <Column width={200} dataField='no_giro' headerText="No Giro" ></Column>
+                    <Column width={200} dataField='jumlah' headerText="Jumlah" formatter={config.priceFormatter} resizable="resizable"></Column>
                 </Worksheet>
             </SpreadSheets>
             <div className='dashboardRow'>
-                <button className="btn btn-primary dashboardButton">Export to Excel</button>
+                <button className="btn btn-primary dashboardButton" onClick={exportSheet}>Export to Excel</button>
                 <div>
                     <b>Import Excel File:</b>
                     <div>

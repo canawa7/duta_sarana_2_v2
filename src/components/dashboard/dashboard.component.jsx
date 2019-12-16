@@ -7,14 +7,16 @@ import './dashboard.styles.scss';
 
 const Dashboard = () => {
     
-    console.log('Inside of Dashboard');
-
     const [payments, setPayments] = new useState(recentPayments);
 
-    console.log(payments);
+    // console.log(payments);
 
-    function handleValueChanged(tableData) {
+    const handleValueChanged = (tableData) => {
         setPayments(tableData.slice(0));
+    }
+    
+    const handleFileImported = (newSales) => {
+        setPayments(newSales.slice(0));
     }
     
 
@@ -24,6 +26,7 @@ const Dashboard = () => {
                 <div className="row">
                     <InvoiceTable tableData={payments}
                         valueChangedCallback={handleValueChanged}
+                        fileImportedCallback={handleFileImported}
                     />
                 </div>
             </div>
